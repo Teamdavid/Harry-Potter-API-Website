@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="styles.css">
+  <title>Document</title>
+</head>
+<body>
+  <!-- Character Board -->
+  <section id="main">
+    <ul> 
+      <li id="gryffindorCount">Gyffindor: </li>
+      <li id="ravenclawCount">Ravenclaw: </li>
+      <li id="hufflepuffCount">Hufflepuff: </li>
+      <li id="slytherinCount">Slytherin: </li>
+    </ul>
+    <h3 class="heading">Harry Potter Characters</h3>
+    <button id="characterBtn" class="sortBtn" data-sortdir="asc">A-Z</button>
+    <button id="characterBtn" class="sortBtn" data-sortdir="desc">Z-A</button>
+    <div id="characterBoard" class="board character-board">
+      <!-- Template HTML -->
+      <!-- <div class="character-card">
+        <img src="https://ik.imagekit.io/hpapi/harry.jpg" alt="Harry Potter">
+        <div class="card-text">
+          <p>Harry Potter</p>
+          <p>House: Gryffindor</p>
+          <p>Patronous: Stag</p>
+          <p>Hogwarts Student</p>
+        </div>
+      </div> -->
+    </div>
+  </section>
+  <!-- Favorites Board -->
+  <section id="favorites">
+    <h3 class="heading">Favorite Characters</h3>
+    <button id="favoritesBtn" class="sortBtn" data-sortdir="asc">A-Z</button>
+    <button id="favoritesBtn" class="sortBtn" data-sortdir="desc">Z-A</button>
+    <div id="favoritesBoard" class="board favorites-board">
+
+    </div>
+  </section>
+
+  <script src="main.js"></script>
+</body>
+</html>
