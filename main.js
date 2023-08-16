@@ -153,12 +153,3 @@ function addCountersValues() {
   addHouseCounters(value[0], key, value[1]);
   })
 }
-
-// setTimeout(() => addCharacterCards(charactersArray), 2000);
-
-// setTimeout(() => {
-//   addListenersToCards(charactersArray);
-//   addListenersToSortBtns(sortBtn);
-//   addCountersValues();
-// }, 2050)
-
