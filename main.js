@@ -6,15 +6,27 @@ const hpAPI = async () => {
     });
 }
 
-let charactersArray = [];
 hpAPI().then(data => {
-  return charactersArray = data;
+  createUI(data);
 });
 
 let gryffindorCounter = 0;
 let ravenclawCounter = 0;
 let hufflepuffCounter = 0;
 let slytherinCounter = 0;
+const mainBoard = document.getElementById('characterBoard');
+const favsBoard = document.getElementById('favoritesBoard');
+
+function createUI(data) {
+  addCharacterCards(data)
+
+  const allCharacters = document.getElementsByClassName('character-card');
+  const sortBtn = document.getElementsByClassName('sortBtn');
+
+  addListenersToCards(allCharacters);
+  addListenersToSortBtns(sortBtn);
+  addCountersValues();
+}
 
 function addCharacterCards(charactersArray) {
   for (let i = 0; i < 20; i++) {
@@ -67,11 +79,10 @@ function addCharacterCards(charactersArray) {
     }
     
     const characterHogwartsPosition = document.createElement('p');
-    if (charactersArray[i].hogwartsStudent) {
-      characterHogwartsPosition.textContent = 'Hogwarts Student';
-      document.getElementById('characterText' + i).append(characterHogwartsPosition);
-    } else if (charactersArray[i].hogwartsStaff) {
-      characterHogwartsPosition.textContent = 'Hogwarts Staff';
+
+    if (charactersArray[i].hogwartsStudent || charactersArray[i].hogwartsStaff) {
+      const type = charactersArray[i].hogwartsStudent ? 'Student' : 'Staff';
+      characterHogwartsPosition.textContent = `Hogwarts ${type}`;
       document.getElementById('characterText' + i).append(characterHogwartsPosition);
     }
   }
@@ -82,57 +93,36 @@ function addHouseCounters(id, house, counter) {
   listElement.textContent = house + ': ' + counter;
 }
 
-// Moving Cards between sections
-const mainBoard = document.getElementById('characterBoard');
-const favsBoard = document.getElementById('favoritesBoard');
-const allCharacters = document.getElementsByClassName('character-card');
-
 function updateCollections(id, direction) {
   const card = document.getElementById(id);
-  if (direction === 'toMain') {
-    mainBoard.appendChild(card);
-    card.classList.add('notFav');
-    card.classList.remove('isFav');
-  } else {
-    favsBoard.appendChild(card);
-    card.classList.add('isFav');
-    card.classList.remove('notFav');
-  }
+  const classesArr = ['notFav', 'isFav'];
+  const paramsArr = direction === 'toMain'
+    ? [mainBoard, classesArr]
+    : [favsBoard, classesArr.reverse()];
+    
+  paramsArr[0].appendChild(card)
+  card.classList.add(paramsArr[1][0]);
+  card.classList.remove(paramsArr[1][1]);
 }
-
-const sortBtn = document.getElementsByClassName('sortBtn');
 
 function sortData(id, direction, favClass) {
   const container = document.getElementById(id);
   const cardsArray = Array.from(document.getElementsByClassName(favClass));
-  const sortAsc = (a, b) => {
-    if (a.attributes.name.nodeValue < b.attributes.name.nodeValue) return -1;
-    else if(a.attributes.name.nodeValue > b.attributes.name.nodeValue) return 1;
-    else return 0;
-  }
-  const sortDesc = (a, b) => {
-    if (a.attributes.name.nodeValue < b.attributes.name.nodeValue) return 1;
-    else if(a.attributes.name.nodeValue > b.attributes.name.nodeValue) return -1;
+
+  const sortCards = (a, b) => {
+    if (a.attributes.name.nodeValue < b.attributes.name.nodeValue) return direction === 'asc' ?  -1 : 1;
+    else if(a.attributes.name.nodeValue > b.attributes.name.nodeValue) return direction === 'asc' ? 1 : -1;
     else return 0;
   }
 
-  if (direction === 'asc') {
-    cardsArray.sort(sortAsc);
-    cardsArray.forEach((card) => {
-      container.append(card);
-    });
-  } else if (direction === 'desc') {
-    cardsArray.sort(sortDesc);
-    cardsArray.forEach((card) => {
-      container.append(card);
-    });
-  }
+  cardsArray.sort(sortCards);
+  cardsArray.forEach((card) => {
+    container.append(card);
+  });
 }
 
-setTimeout(() => addCharacterCards(charactersArray), 2000);
-
-setTimeout(() => {
-  for (let card of allCharacters) {
+function addListenersToCards(cards) {
+  for (let card of cards) {
     card.addEventListener('click', () => {
       const parentId = card.parentElement.id;
       let direction;
@@ -140,18 +130,35 @@ setTimeout(() => {
       updateCollections(card.id, direction);
     })
   }
-  for (let btn of sortBtn) {
+}
+
+function addListenersToSortBtns(btns) {
+  for (let btn of btns) {
     btn.addEventListener('click', () => {
-      if (btn.id === 'characterBtn') {
-        sortData('characterBoard', btn.getAttribute('data-sortdir'), 'notFav');
-      } else {
-        sortData('favoritesBoard', btn.getAttribute('data-sortdir'), 'isFav');
-      }
+      const type = btn.id === 'characterBtn' ? ['characterBoard', 'notFav'] : ['favoritesBoard', 'isFav'];
+      sortData(type[0], btn.getAttribute('data-sortdir'), type[1]);
     })
   }
-  addHouseCounters('gryffindorCount', 'Gryffindor', gryffindorCounter);
-  addHouseCounters('ravenclawCount', 'Ravenclaw', ravenclawCounter);
-  addHouseCounters('hufflepuffCount', 'Hufflepuff', hufflepuffCounter);
-  addHouseCounters('slytherinCount', 'Slytherin', slytherinCounter);
-}, 2050)
+}
+
+function addCountersValues() {
+  const counterObj = {
+    'Gryffindor' : ['gryffindorCount', gryffindorCounter],
+    'Ravenclaw' : ['ravenclawCount', ravenclawCounter],
+    'Hufflepuff' : ['hufflepuffCount', hufflepuffCounter],
+    'Slytherin' : ['slytherinCount', slytherinCounter]
+  }
+
+  Object.entries(counterObj).forEach(([key, value]) => {
+  addHouseCounters(value[0], key, value[1]);
+  })
+}
+
+// setTimeout(() => addCharacterCards(charactersArray), 2000);
+
+// setTimeout(() => {
+//   addListenersToCards(charactersArray);
+//   addListenersToSortBtns(sortBtn);
+//   addCountersValues();
+// }, 2050)
 
